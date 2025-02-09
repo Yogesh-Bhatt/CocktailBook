@@ -1,9 +1,7 @@
 import UIKit
 import SwiftUI
 class MainScreenViewController: UIViewController {
-    
-    private let cocktailsAPI: CocktailsAPI = FakeCocktailsAPI()
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
