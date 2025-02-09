@@ -1,20 +1,9 @@
 import SwiftUI
 
-struct DetailView: View {
-    var body: some View {
-        VStack {
-            Text("Detail Screen")
-                .font(.largeTitle)
-                .padding()
-        }
-    }
-}
-
 struct CocktailDetailView: View {
     let cocktail: Cocktail
-    @ObservedObject var viewModel: CocktailViewModel
+    @ObservedObject var viewModel: CocktailViewModel  // Pass the existing ViewModel
     @State private var cocktailImage: UIImage? = nil
-    
     var body: some View {
         VStack {
             // Custom Image Loader instead of AsyncImage
@@ -59,7 +48,7 @@ struct CocktailDetailView: View {
             Spacer()
         }
         .padding()
-        .navigationBarTitle(Text(cocktail.name), displayMode: .inline)
+        .navigationBarTitle("Cocktail Detail", displayMode: .inline)
     }
     
     private func loadImage(from urlString: String) {

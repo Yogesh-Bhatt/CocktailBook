@@ -1,25 +1,27 @@
-//
-//  Untitled.swift
-//  CocktailBook
-//
-//  Created by Yogesh Bhatt on 09/02/25.
-//
+import SwiftUI
+import Combine
 
-import Foundation
+protocol CocktailServiceProtocol {
+    func fetchCocktails(query: String, completion: @escaping ([Cocktail]) -> Void)
+}
+
+class CocktailService: CocktailServiceProtocol {
+    func fetchCocktails(query: String, completion: @escaping ([Cocktail]) -> Void) {
+        // Actual network call here
+        APIService.shared.fetchCocktails(query: query) { [weak self] drinks in
+            completion(drinks)
+        }
+
+    }
+}
 
 class CocktailViewModel: ObservableObject {
     @Published var cocktails: [Cocktail] = []
     @Published var favorites: Set<String> = []
+    private var service: CocktailServiceProtocol
     
-    init() {
-       // loadFavorites()
-        //fetchCocktails()
-    }
-    
-    func fetchCocktails(query: String) {
-        APIService.shared.fetchCocktails(query: query) { [weak self] drinks in
-            self?.cocktails = drinks
-        }
+    init(service: CocktailServiceProtocol = CocktailService()) {
+        self.service = service
     }
     
     func toggleFavorite(cocktail: Cocktail) {
@@ -28,14 +30,14 @@ class CocktailViewModel: ObservableObject {
         } else {
             favorites.insert(cocktail.id)
         }
-        saveFavorites()
+       // saveFavorites()
     }
-    
-    private func saveFavorites() {
-        UserDefaults.standard.set(Array(favorites), forKey: "FavoriteCocktails")
-    }
-    
-    private func loadFavorites() {
-        favorites = Set(UserDefaults.standard.stringArray(forKey: "FavoriteCocktails") ?? [])
+
+    func fetchCocktails(query: String) {
+        service.fetchCocktails(query: query) { [weak self] cocktails in
+            DispatchQueue.main.async {
+                self?.cocktails = cocktails
+            }
+        }
     }
 }
